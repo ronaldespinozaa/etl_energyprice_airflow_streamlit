@@ -50,27 +50,6 @@ La arquitectura está basada en contenedores Docker, utilizando Apache Airflow p
 
 2. Crear archivo `.env` con las credenciales necesarias:
 
-<details>
-<summary>Ver ejemplo de archivo .env (haz clic para expandir)</summary>
-
-```bash
-# PostgreSQL
-POSTGRES_USER=airflow
-POSTGRES_PASSWORD=airflow
-POSTGRES_DB=airflow
-
-# Airflow
-AIRFLOW_ADMIN_USER=admin
-AIRFLOW_ADMIN_PASSWORD=admin
-FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-
-# ESIOS API
-ESIOS_TOKEN=tu_token_de_esios_aqui
-```
-</details>
-
-> ⚠️ **Importante**: Reemplaza estos valores con credenciales seguras en entornos de producción.
-
 3. Iniciar los servicios:
    ```bash
    docker-compose up -d
