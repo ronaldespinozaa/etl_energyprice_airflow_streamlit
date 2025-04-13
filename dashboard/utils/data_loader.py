@@ -1,11 +1,20 @@
 import pandas as pd
+import os
+import numpy as np
 from sqlalchemy import create_engine,text
 import streamlit as st
+from dotenv import load_dotenv
+load_dotenv()  # Carga las variables desde .env
+POSTGRES_USER = os.environ.get('POSTGRES_USER', 'airflow')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'airflow')
+POSTGRES_DB = os.environ.get('POSTGRES_DB', 'airflow')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'postgres')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT', '5432')
 
 # Conexión a la base de datos
 @st.cache_resource
 def get_db_connection():
-    connection_string = 'postgresql://airflow:airflow@postgres:5432/airflow'
+    connection_string = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
     return create_engine(connection_string)
 
 # Obtener datos de precios

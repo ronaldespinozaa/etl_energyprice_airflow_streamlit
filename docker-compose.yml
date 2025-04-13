@@ -7,6 +7,9 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PORT=${POSTGRES_PORT} # Agregado aquí
+
+
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,6 +21,21 @@ services:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 5s
       retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: etl_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - etl-network
+    depends_on:
+      - postgres
+    restart: always
+
   streamlit:
     build:
       context: .
@@ -44,14 +62,15 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=${FERNET_KEY}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - ESIOS_TOKEN=${ESIOS_TOKEN}
+      - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW__WEBSERVER__SECRET_KEY} # Configuración aquí
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
-      - ./data:/data
+      - ./data:/opt/airflow/data  # CAMBIAR ESTA LÍNEA
       - ./scripts:/scripts
     ports:
-      - "8080:8080"    # En este puerto se ejecutará el servidor web de Airflow
+      - "8080:8080"
     command: webserver
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
@@ -72,11 +91,12 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=${FERNET_KEY}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - ESIOS_TOKEN=${ESIOS_TOKEN}
+      - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW__WEBSERVER__SECRET_KEY} # Configuración aquí
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
-      - ./data:/data
+      - ./data:/opt/airflow/data  # CAMBIAR ESTA LÍNEA
       - ./scripts:/scripts
     command: scheduler
     networks:
